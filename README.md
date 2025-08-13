@@ -52,7 +52,7 @@ You need the [Pyscript integration](https://hacs-pyscript.readthedocs.io/en/late
 
 #### ESPHome Device Setup
 
-This project relies on a custom component that has compatibility issues with the latest versions of ESPHome. It is strongly recommended to use ESPHome `v2024.12.4`. A convenient way to install it alongside a newer version in Home Assistant is by using the [esphome-legacy-addons](https://github.com/khenderick/esphome-legacy-addons) repository.
+This project relies on a custom component that has compatibility issues with the latest versions of ESPHome due to breaking changes in them. It is recommended to use ESPHome `v2024.12.4`. A convenient way to install it alongside a newer version in Home Assistant is by using the [esphome-legacy-addons](https://github.com/khenderick/esphome-legacy-addons) repository.
 
 **Instructions:**
 
@@ -94,7 +94,7 @@ This project relies on a custom component that has compatibility issues with the
 
 ### 3D-Printed Case (Optional)
 
-For details on the 3D-printable case, please see the information in the [`3d_model`](./3d_model/README.md) directory.
+Details on the 3D-printable case can be found [here](https://www.printables.com/model/741304-lilygo-t5-47-inch-case).
 
 **Notes on Fitment and Assembly**
 
