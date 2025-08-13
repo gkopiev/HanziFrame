@@ -72,8 +72,8 @@ This project relies on a custom component that has compatibility issues with the
         ```
         
    **Component Modification:** You must manually edit the `display.py` file of the custom component. Open the file at `<esphome_config>/custom_components/t547/display.py` and add the following lines inside the `to_code` function to ensure proper compilation:
-    
-    ```python
+   
+    ```
     cg.add_build_flag("-DCONFIG_RMT_SUPPRESS_DEPRECATE_WARN=1")
     cg.add_build_flag("-DCONFIG_RMT_ISR_IRAM_SAFE=0")
     
