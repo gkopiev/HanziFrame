@@ -7,10 +7,9 @@ import os
 import json
 
 # --- PATH CONFIGURATION ---
-# Now the file is in the pyscript root, so the data path is different
 BASE_APP_PATH = "/config/pyscript/apps/chinese_display"
 CSV_FILE = f"{BASE_APP_PATH}/data/chinese_words.csv"
-STATE_FILE = f"{BASE_APP_PATH}/chinese_word_state.json"  # or wherever you want to store it
+STATE_FILE = f"{BASE_APP_PATH}/chinese_word_state.json"
 CHINESE_FONT_PATH = f"{BASE_APP_PATH}/fonts/AR-PL-KaitiM-GB.ttf"
 OTHER_FONT_PATH = f"{BASE_APP_PATH}/fonts/Montserrat-SemiBold.ttf"
 OUTPUT_PATH = "/config/www/word.png"
