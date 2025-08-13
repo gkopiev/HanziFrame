@@ -31,6 +31,7 @@ This project turns a LilyGo T5 4.7" E-Ink display into a "digital flashcard" tha
 *   [LilyGo T5-4.7 Inch E-Paper (ESP32-S3)](https://lilygo.cc/products/t5-4-7-inch-e-paper-v2-3)
 *   A running Home Assistant instance.
 *   (Optional) 3D printer for the case.
+*   USB-C cable and power adapter.
 
 ## Software & Setup
 
