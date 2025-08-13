@@ -119,6 +119,6 @@ For assembly, I used **M2x4x3.2** heated inserts and **M2x5** screws.
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 *   **Fonts:**
-    *   `AR PL KaitiM GB` is used under the [Arphic Public License](./homeassistant/pyscript/apps/chinese_display/fonts/ARPHIC_LICENSE.txt).
-    *   `Montserrat` is used under the [SIL Open Font License 1.1](./homeassistant/pyscript/apps/chinese_display/fonts/MONTSERRAT_LICENSE.txt).
+    *   `AR PL KaitiM GB` is used under the [Arphic Public License](https://github.com/gkopiev/HanziFrame/blob/main/pyscript/apps/chinese_display/fonts/ARPHIC_LICENSE.txt).
+    *   `Montserrat` is used under the [SIL Open Font License 1.1](https://github.com/gkopiev/HanziFrame/blob/main/pyscript/apps/chinese_display/fonts/MONTSERRAT_LICENSE.txt).
 *   **3D Model:** The case was designed by Vladimir Varzaru and is licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/). Original model can be found [here](https://www.printables.com/model/741304-lilygo-t5-47-inch-case).
