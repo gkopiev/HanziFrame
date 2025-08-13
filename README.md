@@ -68,13 +68,11 @@ This project relies on a custom component that has compatibility issues with the
         ```
    **Component Modification:** You must manually edit the `display.py` file of the custom component. Open the file at `<esphome_config>/custom_components/t547/display.py` and add the following lines inside the `to_code` function to ensure proper compilation:
     ```python
-    # ... inside the to_code function
     cg.add_build_flag("-DCONFIG_RMT_SUPPRESS_DEPRECATE_WARN=1")
     cg.add_build_flag("-DCONFIG_RMT_ISR_IRAM_SAFE=0")
     
     cg.add_library("Wire", None)  # required by LilyGoEPD47
     cg.add_library("SPI", None)   # adding SPI
-    # ...
     ```
     
 2.  **Copy the ESPHome Configuration:**
