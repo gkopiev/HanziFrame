@@ -20,6 +20,7 @@ This project turns a LilyGo T5 4.7" E-Ink display into a "digital flashcard" tha
     *   It generates a 960x540 pixel PNG image with the chinese word, pinyin, and translation. The image is inverted (white text on a black background) to be correctly displayed on the E-Ink screen.
     *   This image is saved to the `/config/www/` directory, making it accessible via a local URL.
     *   An **Automation** triggers this script periodically (e.g., every 15 minutes) and then calls a service on the ESPHome device to refresh the display.
+
 2.  **ESPHome Device (LilyGo T5):**
     *   The device acts as a thin client. It doesn't do any font rendering.
     *   When triggered by Home Assistant, it downloads the pre-rendered PNG image from the local server.
@@ -33,18 +34,21 @@ This project turns a LilyGo T5 4.7" E-Ink display into a "digital flashcard" tha
 
 ## Software & Setup
 
-### 1. Home Assistant Configuration
+### Home Assistant Configuration
 
 You need the [Pyscript integration](https://hacs-pyscript.readthedocs.io/en/latest/installation.html) installed in your Home Assistant.
 
 1.  **Copy Files:** Copy the `pyscript` directory from this repository into your Home Assistant's `<config>` directory. The final path should look like `<config>/pyscript/...`.
+
 2.  **Install Dependencies:** The `requirements.txt` file lists the necessary Python library (`Pillow`). Pyscript should install it automatically.
+
 3.  **Create Word List:**
     *   Navigate to `<config>/pyscript/apps/chinese_display/data/`.
     *   Edit `chinese_words.csv` and fill it with your own words. The columns are `chinese`, `pinyin`, `translation`.
+
 4.  **Add Automation:** Copy the code from `homeassistant/automation.yaml` into your `automations.yaml` file in Home Assistant, or create a new automation via the UI using this logic.
 
-### 2. ESPHome Device Setup
+### ESPHome Device Setup
 
 #### ESPHome Device Setup
 
@@ -66,7 +70,9 @@ This project relies on a custom component that has compatibility issues with the
         │       └── ... (other component files)
         └── ... (your yaml files)
         ```
+        
    **Component Modification:** You must manually edit the `display.py` file of the custom component. Open the file at `<esphome_config>/custom_components/t547/display.py` and add the following lines inside the `to_code` function to ensure proper compilation:
+    
     ```python
     cg.add_build_flag("-DCONFIG_RMT_SUPPRESS_DEPRECATE_WARN=1")
     cg.add_build_flag("-DCONFIG_RMT_ISR_IRAM_SAFE=0")
