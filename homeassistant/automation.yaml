@@ -1,0 +1,20 @@
+alias: Update word
+description: Runs every 15 minutes
+triggers:
+  - minutes: /15
+    trigger: time_pattern
+  - event: start
+    trigger: homeassistant
+conditions:
+  - condition: time
+    after: "07:30:00"
+    before: "23:59:59"
+actions:
+  - action: script.generate_new_word_image
+    data: {}
+  - delay: "00:00:02"
+  - action: button.press
+    data: {}
+    target:
+      entity_id: button.lilygo_display_refresh_chinese_word
+mode: single
