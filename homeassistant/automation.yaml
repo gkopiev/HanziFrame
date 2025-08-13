@@ -16,5 +16,5 @@ actions:
   - action: button.press
     data: {}
     target:
-      entity_id: button.lilygo_display_refresh_chinese_word
+      entity_id: button.lilygo_display_refresh_chinese_word # You can name it as you wish
 mode: single
