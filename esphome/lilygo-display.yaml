@@ -54,7 +54,7 @@ http_request:
 
 # Online image with Chinese words
 online_image:
-  - url: "http://homeassistant.local:8123/local/word.png"
+  - url: "http://homeassistant.local:8123/local/word.png" # You can change homeassistant.local to your HA Server IP address
     format: PNG
     id: chinese_word_image
     type: GRAYSCALE  # Grayscale is suitable for an E-Ink display
