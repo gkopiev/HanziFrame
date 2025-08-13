@@ -1,0 +1,89 @@
+esphome:
+  name: lilygo-display
+  friendly_name: LilyGo E-Ink Display
+  
+  platformio_options:
+    board_build.arduino.memory_type: qio_opi
+    board_build.extra_flags:
+      - "-DBOARD_HAS_PSRAM"
+      - "-DARDUINO_USB_MODE=1"
+    board_build.f_cpu: "240000000L"
+    board_build.f_flash: "80000000L"
+    board_build.flash_mode: qio
+    board_build.psram_type: opi
+    board_name: "LilyGo T5-ePaper-S3"
+    board_upload.maximum_size: 16777216
+    board_upload.maximum_ram_size: 327680
+    upload_speed: 921600
+    monitor_speed: 115200
+    lib_compat_mode: soft
+
+external_components:
+  - source: 
+      type: local
+      path: custom_components
+    components: [ t547 ]
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  framework:
+    type: arduino
+    version: 2.0.14
+    platform_version: 6.4.0
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+
+api:
+  encryption:
+    key: "PLACE_YOUR_KEY_HERE"
+
+ota:
+  - platform: esphome
+    password: "PLACE_YOUR_PASSWORD_HERE"
+
+# HTTP Request component (required for online_image)
+http_request:
+  useragent: "ESPHome Chinese Display"
+  timeout: 10s
+  verify_ssl: false
+
+# Online image with Chinese words
+online_image:
+  - url: "http://homeassistant.local:8123/local/word.png"
+    format: PNG
+    id: chinese_word_image
+    type: GRAYSCALE  # Grayscale is suitable for an E-Ink display
+    resize: 960x540   # Exactly the size of the display
+    update_interval: never  # Update only on request
+    on_download_finished:
+      - logger.log: "Image downloaded successfully"
+      - component.update: epaper_display
+    on_error:
+      - logger.log: "Error downloading image"
+
+# Virtual button to refresh the screen
+button:
+  - platform: template
+    name: "Refresh Chinese word"
+    id: refresh_chinese_word
+    on_press:
+      - logger.log: "Request to refresh Chinese word"
+      - component.update: chinese_word_image
+
+# Display configuration
+display:
+  - platform: t547
+    id: epaper_display
+    rotation: 0
+    update_interval: never  # Update only when a new image is received
+    lambda: |-
+      // Clear the screen
+      it.fill(COLOR_OFF);
+      
+      // Display the Chinese word (image takes up the whole screen)
+      it.image(0, 0, id(chinese_word_image));
