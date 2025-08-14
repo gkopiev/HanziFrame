@@ -105,7 +105,7 @@ Based on my experience, you might encounter minor fitment issues with the 3D-pri
 
 It's likely that these minor issues are due to small changes in the LilyGo board revision rather than the 3D model itself. If you have 3D modeling skills, it is recommended to first take precise measurements of your specific board and make small adjustments to the model before printing.
 
-For assembly, I used **M2x4x3.2** heated inserts and **M2x5** screws.
+For assembly, I used **M2x3.2x4** heated inserts (where 3.2 is outer diameter in mm) and **M2x5** screws.
 
 ## Customization
 
