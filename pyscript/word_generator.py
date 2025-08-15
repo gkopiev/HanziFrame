@@ -111,8 +111,8 @@ def create_word_image(word_data, output_path, word_number=None, total_words=None
     pinyin_text = word_data.get('pinyin', '')
     translation_text = word_data.get('translation', '')
     
-    # Adaptive sizes for Chinese and pinyin (as before)
-    if len(chinese_text) <= 2:
+    # Check if adaptive size is needed (short Chinese text AND short pinyin)
+    if len(chinese_text) <= 2 and len(pinyin_text) <= 8:  # Add pinyin length check
         chinese_size = base_chinese_size
         try:
             chinese_font = ImageFont.truetype(CHINESE_FONT_PATH, chinese_size)
@@ -125,10 +125,9 @@ def create_word_image(word_data, output_path, word_number=None, total_words=None
         except IOError:
             pinyin_font = ImageFont.load_default()
     else:
+        # Use adaptive sizes
         chinese_size, chinese_font = get_adaptive_font_size(draw, chinese_text, CHINESE_FONT_PATH, base_chinese_size, chinese_max_width)
-        pinyin_size_ratio = chinese_size / base_chinese_size
-        adaptive_pinyin_size = int(base_pinyin_size * pinyin_size_ratio)
-        pinyin_size, pinyin_font = get_adaptive_font_size(draw, pinyin_text, OTHER_FONT_PATH, adaptive_pinyin_size, pinyin_max_width)
+        pinyin_size, pinyin_font = get_adaptive_font_size(draw, pinyin_text, OTHER_FONT_PATH, base_pinyin_size, pinyin_max_width)
     
     # Adaptive size for translation text
     translation_size, translation_font = get_adaptive_font_size(draw, translation_text, OTHER_FONT_PATH, base_translation_size, translation_max_width, min_size=20)
