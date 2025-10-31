@@ -99,7 +99,7 @@ Details on the 3D-printable case can be found [here](https://www.printables.com/
 
 Based on my experience, you might encounter minor fitment issues with the 3D-printed case, especially with recent revisions of the LilyGo T5 board:
 
-*   **Tight Fit:** The board itself can be a very tight fit, potentially requiring slight modification (e.g., trimming a couple of millimeters off a corner) to fit comfortably into the case.
+*   **Tight Fit:** The board itself can be a very tight fit, potentially requiring slight modification to the case (e.g., trimming a couple of millimeters off) to fit comfortably.
 *   **USB-C Port:** The opening for the USB-C port is quite narrow. I was able to use a slim Apple USB-C cable, but cables with larger plastic housings may not fit.
 *   **Button Alignment:** The button on the printed case might not perfectly align with the physical button on the board.
 
