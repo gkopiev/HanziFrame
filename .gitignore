@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local agent / task state
+/.agent/
+/.agents/
+/.codex/
+/.claude/
+/.gemini/
+/.cache/
+
+# Runtime / state files
+pyscript/apps/chinese_display/chinese_word_state.json
+
+# Home Assistant runtime (never copy from a live installation)
+.storage/
+home-assistant_v2.db*
+*.db
+*.db-*
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-*
+
+# ESPHome build artifacts
+.esphome/
+*.bin
+*.elf
+*.partitions.bin
+*.map
+*.uf2
+/build/
+
+# Secrets and credential material (never commit values)
+secrets.yaml
+*.secret
+.env
+.env.*
+!.env.example
+.envrc
+.direnv/
+credentials.json
+service-account*.json
+client_secret*.json
+id_rsa*
+id_ed25519*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# Backups / merge leftovers
+/backups/
+*.tar
+*.tar.gz
+*.tgz
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Generated output (if running locally)
+word.png
