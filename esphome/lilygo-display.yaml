@@ -1,36 +1,30 @@
 esphome:
-  name: lilygo-display
-  friendly_name: LilyGo E-Ink Display
-  
-  platformio_options:
-    board_build.arduino.memory_type: qio_opi
-    board_build.extra_flags:
-      - "-DBOARD_HAS_PSRAM"
-      - "-DARDUINO_USB_MODE=1"
-    board_build.f_cpu: "240000000L"
-    board_build.f_flash: "80000000L"
-    board_build.flash_mode: qio
-    board_build.psram_type: opi
-    board_name: "LilyGo T5-ePaper-S3"
-    board_upload.maximum_size: 16777216
-    board_upload.maximum_ram_size: 327680
-    upload_speed: 921600
-    monitor_speed: 115200
-    lib_compat_mode: soft
+  name: hanzi-frame
+  friendly_name: HanziFrame
+  build_flags:
+    - "-mfix-esp32-psram-cache-issue"
 
 external_components:
-  - source: 
+  - source:
       type: local
       path: custom_components
-    components: [ t547 ]
+    components: [t547]
 
 esp32:
+  variant: esp32s3
   board: esp32-s3-devkitc-1
   flash_size: 16MB
+  flash_mode: qio
+  flash_frequency: 80MHz
+  cpu_frequency: 240MHz
+  toolchain: esp-idf
   framework:
     type: arduino
-    version: 2.0.14
-    platform_version: 6.4.0
+
+psram:
+  mode: octal
+  speed: 80MHz
+  ignore_not_found: false
 
 wifi:
   ssid: !secret wifi_ssid
@@ -40,21 +34,22 @@ logger:
 
 api:
   encryption:
-    key: "PLACE_YOUR_KEY_HERE"
+    key: !secret api_encryption_key
 
 ota:
   - platform: esphome
-    password: "PLACE_YOUR_PASSWORD_HERE"
+    password: !secret ota_password
 
 # HTTP Request component (required for online_image)
 http_request:
-  useragent: "ESPHome Chinese Display"
+  useragent: "HanziFrame"
   timeout: 10s
   verify_ssl: false
 
 # Online image with Chinese words
-online_image:
-  - url: "http://homeassistant.local:8123/local/word.png" # You can change homeassistant.local to your HA Server IP address
+image:
+  - platform: online_image
+    url: "http://homeassistant.local:8123/local/word.png" # You can change homeassistant.local to your HA Server IP address
     format: PNG
     id: chinese_word_image
     type: GRAYSCALE  # Grayscale is suitable for an E-Ink display
@@ -84,6 +79,6 @@ display:
     lambda: |-
       // Clear the screen
       it.fill(COLOR_OFF);
-      
+
       // Display the Chinese word (image takes up the whole screen)
       it.image(0, 0, id(chinese_word_image));

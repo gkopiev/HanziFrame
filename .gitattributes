@@ -1,0 +1,6 @@
+# Binary assets must never receive text or line-ending normalization.
+*.png binary
+*.ttf binary
+
+# Preserve formatting inherited from the pinned third-party component.
+esphome/custom_components/t547/** -whitespace
