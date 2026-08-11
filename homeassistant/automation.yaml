@@ -1,20 +1,205 @@
-alias: Update word
-description: Runs every 15 minutes
-triggers:
-  - minutes: /15
-    trigger: time_pattern
-  - event: start
-    trigger: homeassistant
-conditions:
-  - condition: time
-    after: "07:30:00"
-    before: "23:59:59"
-actions:
-  - action: script.generate_new_word_image
-    data: {}
-  - delay: "00:00:02"
-  - action: button.press
-    data: {}
-    target:
-      entity_id: button.lilygo_display_refresh_chinese_word # You can name it as you wish
-mode: single
+# Fresh-install / merge reference for HanziFrame second generation.
+# DO NOT replace the live /config/automations.yaml with this file wholesale.
+# During an existing-install merge, preserve the current automation IDs,
+# conditions, entity IDs and every unrelated automation. Adapt the references
+# below instead of renaming working entities without a migration plan.
+
+- id: hanziframe_scheduled_word_refresh
+  alias: HanziFrame scheduled word refresh
+  description: Generates the next word at Home Assistant start and every 10 minutes, then refreshes the E-Ink display.
+  triggers:
+    - trigger: time_pattern
+      minutes: /10
+    - trigger: homeassistant
+      event: start
+  conditions: []
+  actions:
+    - action: pyscript.generate_word_image
+      data: {}
+    - action: button.press
+      target:
+        entity_id: button.hanzi_frame_refresh_chinese_word
+      data: {}
+  mode: single
+
+- id: hanziframe_manual_word_refresh
+  alias: HanziFrame manual word refresh
+  description: Runs the full refresh chain when the HanziFrame next-word helper is pressed.
+  triggers:
+    - trigger: state
+      entity_id: input_button.hanziframe_next_word
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+  conditions: []
+  actions:
+    - action: automation.trigger
+      target:
+        entity_id: automation.hanziframe_scheduled_word_refresh
+      data:
+        skip_condition: true
+  mode: single
+
+- id: hanziframe_dictionary_management
+  alias: HanziFrame dictionary management
+  description: Adds words and imports vocabulary through native Home Assistant helpers.
+  triggers:
+    - trigger: state
+      entity_id: input_button.hanziframe_add_word
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: add
+    - trigger: state
+      entity_id: input_button.hanziframe_import_words
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: bulk
+    - trigger: state
+      entity_id: input_button.hanziframe_import_csv_file
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: file
+  conditions: []
+  actions:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: add
+          sequence:
+            - variables:
+                result: {}
+            - action: pyscript.add_chinese_word
+              data:
+                chinese: "{{ states('input_text.hanziframe_new_chinese') }}"
+                pinyin: "{{ states('input_text.hanziframe_new_pinyin') }}"
+                translation: "{{ states('input_text.hanziframe_new_translation') }}"
+              response_variable: result
+              continue_on_error: true
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ result is mapping
+                       and 'added' in result
+                       and 'skipped' in result
+                       and not result.get('error')
+                       and not result.get('reason') }}
+              then:
+                - action: input_text.set_value
+                  target:
+                    entity_id:
+                      - input_text.hanziframe_new_chinese
+                      - input_text.hanziframe_new_pinyin
+                      - input_text.hanziframe_new_translation
+                  data:
+                    value: ""
+                - action: persistent_notification.dismiss
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+              else:
+                - action: persistent_notification.create
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+                    title: HanziFrame dictionary
+                    message: >-
+                      The word could not be added.
+                      {% if result is mapping %}
+                      Reason: {{ result.get('error') or result.get('reason') or 'the service returned no result' }}.
+                      {% else %}
+                      The service returned no result.
+                      {% endif %}
+                      The form values were kept.
+
+        - conditions:
+            - condition: trigger
+              id: bulk
+          sequence:
+            - variables:
+                result: {}
+            - action: pyscript.bulk_import_words
+              data:
+                csv_text: "{{ states('input_text.hanziframe_csv_import_words') }}"
+              response_variable: result
+              continue_on_error: true
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ result is mapping
+                       and 'added' in result
+                       and 'skipped' in result
+                       and not result.get('error')
+                       and not result.get('reason') }}
+              then:
+                - action: input_text.set_value
+                  target:
+                    entity_id: input_text.hanziframe_csv_import_words
+                  data:
+                    value: ""
+                - action: persistent_notification.dismiss
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+              else:
+                - action: persistent_notification.create
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+                    title: HanziFrame dictionary
+                    message: >-
+                      The pasted CSV could not be imported.
+                      {% if result is mapping %}
+                      Reason: {{ result.get('error') or result.get('reason') or 'the service returned no result' }}.
+                      {% else %}
+                      The service returned no result.
+                      {% endif %}
+                      The import field was kept.
+
+        - conditions:
+            - condition: trigger
+              id: file
+          sequence:
+            - variables:
+                result: {}
+            - action: pyscript.import_words_from_csv
+              data: {}
+              response_variable: result
+              continue_on_error: true
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ result is mapping
+                       and 'added' in result
+                       and 'skipped' in result
+                       and not result.get('error')
+                       and not result.get('reason') }}
+              then:
+                - action: persistent_notification.dismiss
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+              else:
+                - action: persistent_notification.create
+                  data:
+                    notification_id: hanziframe_dictionary_action_failed
+                    title: HanziFrame dictionary
+                    message: >-
+                      chinese_words.csv could not be imported.
+                      {% if result is mapping %}
+                      Reason: {{ result.get('error') or result.get('reason') or 'the service returned no result' }}.
+                      {% else %}
+                      The service returned no result.
+                      {% endif %}
+  mode: queued
+  max: 5
+  max_exceeded: silent
