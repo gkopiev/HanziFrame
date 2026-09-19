@@ -1,6 +1,9 @@
 # `log`, `state`, `task`, `todo`, `@service` and `@pyscript_compile` are provided by Pyscript.
 from builtins import open
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+import PIL.Image as Image
+import PIL.ImageDraw as ImageDraw
+import PIL.ImageFont as ImageFont
+import PIL.ImageOps as ImageOps
 import csv
 import io
 import json
