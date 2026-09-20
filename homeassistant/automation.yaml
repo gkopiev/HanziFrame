@@ -86,6 +86,87 @@
   mode: queued
   max: 10
 
+- id: hanziframe_display_style_localization
+  alias: HanziFrame display style localization
+  description: Keeps localized dashboard controls synchronized with the shared renderer state.
+  triggers:
+    - trigger: state
+      entity_id: input_select.hanziframe_display_style
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: canonical
+    - trigger: state
+      entity_id: input_select.hanziframe_display_style_ru
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: russian
+    - trigger: state
+      entity_id: input_select.hanziframe_display_style_en
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+      id: english
+  conditions: []
+  actions:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: russian
+          sequence:
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.hanziframe_display_style
+              data:
+                option: >-
+                  {{ {'Без узоров': 'Без узоров / Plain',
+                      'Уголки': 'Уголки / Corners',
+                      'Рамка': 'Рамка / Full border'}[trigger.to_state.state] }}
+        - conditions:
+            - condition: trigger
+              id: english
+          sequence:
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.hanziframe_display_style
+              data:
+                option: >-
+                  {{ {'Plain': 'Без узоров / Plain',
+                      'Corners': 'Уголки / Corners',
+                      'Full border': 'Рамка / Full border'}[trigger.to_state.state] }}
+        - conditions:
+            - condition: trigger
+              id: canonical
+          sequence:
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.hanziframe_display_style_ru
+              data:
+                option: >-
+                  {{ {'Без узоров / Plain': 'Без узоров',
+                      'Уголки / Corners': 'Уголки',
+                      'Рамка / Full border': 'Рамка'}[trigger.to_state.state] }}
+            - action: input_select.select_option
+              target:
+                entity_id: input_select.hanziframe_display_style_en
+              data:
+                option: >-
+                  {{ {'Без узоров / Plain': 'Plain',
+                      'Уголки / Corners': 'Corners',
+                      'Рамка / Full border': 'Full border'}[trigger.to_state.state] }}
+  mode: queued
+  max: 10
+
 - id: hanziframe_dictionary_management
   alias: HanziFrame dictionary management
   description: Adds words and imports vocabulary through native Home Assistant helpers.
