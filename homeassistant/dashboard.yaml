@@ -1,0 +1,404 @@
+views:
+  - title: Русский
+    path: hanziframe
+    type: sections
+    max_columns: 2
+    header:
+      layout: responsive
+      badges_position: bottom
+    sections:
+      - type: grid
+        background: true
+        cards:
+          - type: heading
+            heading: На экране
+            heading_style: title
+            icon: mdi:tablet-dashboard
+            badges:
+              - type: entity
+                entity: sensor.current_hanzi_word
+                icon: mdi:translate
+                show_icon: true
+                show_state: true
+                state_content: state
+              - type: entity
+                entity: todo.chinese_words
+                icon: mdi:book-open-page-variant
+                show_icon: true
+                show_state: true
+                state_content: state
+          - type: markdown
+            entity_id:
+              - sensor.current_hanzi_word
+            grid_options:
+              columns: full
+            content: >-
+              <img
+                src="/local/word.png?v={{ state_attr('sensor.current_hanzi_word', 'image_version') | int(0) }}"
+                style="display:block;width:100%;height:auto;border-radius:12px;"
+                alt="Предпросмотр экрана HanziFrame">
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_select.hanziframe_display_style_ru
+                name: Оформление экрана
+          - type: tile
+            entity: input_button.hanziframe_next_word
+            name: Следующее слово
+            icon: mdi:skip-next
+            color: indigo
+            hide_state: true
+            grid_options:
+              columns: 6
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_next_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_next_word
+          - type: tile
+            entity: button.hanzi_frame_refresh_chinese_word
+            name: Перерисовать экран
+            icon: mdi:image-refresh
+            color: blue-grey
+            hide_state: true
+            grid_options:
+              columns: 6
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.hanzi_frame_refresh_chinese_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.hanzi_frame_refresh_chinese_word
+      - type: grid
+        cards:
+          - type: heading
+            heading: Добавить слово
+            heading_style: title
+            icon: mdi:book-plus-outline
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_text.hanziframe_new_chinese
+                name: Иероглифы
+              - entity: input_text.hanziframe_new_pinyin
+                name: Пиньинь
+              - entity: input_text.hanziframe_new_translation
+                name: Перевод
+          - type: tile
+            entity: input_button.hanziframe_add_word
+            name: Добавить слово
+            icon: mdi:plus-circle-outline
+            color: green
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_add_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_add_word
+      - type: grid
+        cards:
+          - type: heading
+            heading: Импорт
+            heading_style: title
+            icon: mdi:database-import-outline
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_text.hanziframe_csv_import_words
+                name: Быстрый CSV-импорт (до 255 символов)
+          - type: markdown
+            grid_options:
+              columns: full
+            text_only: true
+            content: >-
+              Формат строки: `你好,nǐ hǎo,Привет`; несколько строк разделяй
+              `;;`. Вставь строки в поле импорта и нажми «Импортировать текст».
+          - type: tile
+            entity: input_button.hanziframe_import_words
+            name: Импортировать текст
+            icon: mdi:playlist-plus
+            color: teal
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_words
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_words
+          - type: markdown
+            grid_options:
+              columns: full
+            text_only: true
+            content: |-
+              Кнопка «Импортировать файл CSV» добавляет слова из файла:
+
+              /config/pyscript/apps/chinese_display/data/chinese_words.csv
+
+              Файл уже размещён в Home Assistant.
+          - type: tile
+            entity: input_button.hanziframe_import_csv_file
+            name: Импортировать файл CSV
+            icon: mdi:file-import-outline
+            color: blue
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_csv_file
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_csv_file
+      - type: grid
+        cards:
+          - type: heading
+            heading: Словарь
+            heading_style: title
+            icon: mdi:book-open-variant
+            badges:
+              - type: entity
+                entity: todo.chinese_words
+                icon: mdi:counter
+                show_icon: true
+                show_state: true
+                state_content: state
+          - type: todo-list
+            entity: todo.chinese_words
+            grid_options:
+              columns: full
+            display_order: none
+            hide_completed: false
+            hide_create: true
+            hide_section_headers: false
+            item_tap_action: edit
+
+  - title: English
+    path: english
+    type: sections
+    max_columns: 2
+    header:
+      layout: responsive
+      badges_position: bottom
+    sections:
+      - type: grid
+        background: true
+        cards:
+          - type: heading
+            heading: On screen
+            heading_style: title
+            icon: mdi:tablet-dashboard
+            badges:
+              - type: entity
+                entity: sensor.current_hanzi_word
+                icon: mdi:translate
+                show_icon: true
+                show_state: true
+                state_content: state
+              - type: entity
+                entity: todo.chinese_words
+                icon: mdi:book-open-page-variant
+                show_icon: true
+                show_state: true
+                state_content: state
+          - type: markdown
+            entity_id:
+              - sensor.current_hanzi_word
+            grid_options:
+              columns: full
+            content: >-
+              <img
+                src="/local/word.png?v={{ state_attr('sensor.current_hanzi_word', 'image_version') | int(0) }}"
+                style="display:block;width:100%;height:auto;border-radius:12px;"
+                alt="HanziFrame screen preview">
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_select.hanziframe_display_style_en
+                name: Display style
+          - type: tile
+            entity: input_button.hanziframe_next_word
+            name: Next word
+            icon: mdi:skip-next
+            color: indigo
+            hide_state: true
+            grid_options:
+              columns: 6
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_next_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_next_word
+          - type: tile
+            entity: button.hanzi_frame_refresh_chinese_word
+            name: Refresh display
+            icon: mdi:image-refresh
+            color: blue-grey
+            hide_state: true
+            grid_options:
+              columns: 6
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.hanzi_frame_refresh_chinese_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.hanzi_frame_refresh_chinese_word
+      - type: grid
+        cards:
+          - type: heading
+            heading: Add a word
+            heading_style: title
+            icon: mdi:book-plus-outline
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_text.hanziframe_new_chinese
+                name: Chinese characters
+              - entity: input_text.hanziframe_new_pinyin
+                name: Pinyin
+              - entity: input_text.hanziframe_new_translation
+                name: Translation
+          - type: tile
+            entity: input_button.hanziframe_add_word
+            name: Add word
+            icon: mdi:plus-circle-outline
+            color: green
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_add_word
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_add_word
+      - type: grid
+        cards:
+          - type: heading
+            heading: Import
+            heading_style: title
+            icon: mdi:database-import-outline
+          - type: entities
+            grid_options:
+              columns: full
+            entities:
+              - entity: input_text.hanziframe_csv_import_words
+                name: Quick CSV import (up to 255 characters)
+          - type: markdown
+            grid_options:
+              columns: full
+            text_only: true
+            content: >-
+              Row format: `你好,nǐ hǎo,Hello`; separate multiple rows with `;;`.
+              Paste the rows into the import field and select “Import text”.
+          - type: tile
+            entity: input_button.hanziframe_import_words
+            name: Import text
+            icon: mdi:playlist-plus
+            color: teal
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_words
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_words
+          - type: markdown
+            grid_options:
+              columns: full
+            text_only: true
+            content: |-
+              “Import CSV file” adds words from this file:
+
+              /config/pyscript/apps/chinese_display/data/chinese_words.csv
+
+              The file is already stored in Home Assistant.
+          - type: tile
+            entity: input_button.hanziframe_import_csv_file
+            name: Import CSV file
+            icon: mdi:file-import-outline
+            color: blue
+            hide_state: true
+            grid_options:
+              columns: full
+            tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_csv_file
+            icon_tap_action:
+              action: perform-action
+              perform_action: input_button.press
+              target:
+                entity_id: input_button.hanziframe_import_csv_file
+      - type: grid
+        cards:
+          - type: heading
+            heading: Vocabulary
+            heading_style: title
+            icon: mdi:book-open-variant
+            badges:
+              - type: entity
+                entity: todo.chinese_words
+                icon: mdi:counter
+                show_icon: true
+                show_state: true
+                state_content: state
+          - type: todo-list
+            entity: todo.chinese_words
+            grid_options:
+              columns: full
+            display_order: none
+            hide_completed: false
+            hide_create: true
+            hide_section_headers: false
+            item_tap_action: edit

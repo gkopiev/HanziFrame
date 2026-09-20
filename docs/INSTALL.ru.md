@@ -126,6 +126,20 @@ input_select:
       - "Без узоров / Plain"
       - "Уголки / Corners"
       - "Рамка / Full border"
+  hanziframe_display_style_ru:
+    name: "HanziFrame — Оформление экрана"
+    icon: mdi:image-frame
+    options:
+      - "Без узоров"
+      - "Уголки"
+      - "Рамка"
+  hanziframe_display_style_en:
+    name: "HanziFrame — Display style"
+    icon: mdi:image-frame
+    options:
+      - "Plain"
+      - "Corners"
+      - "Full border"
 ```
 
 </details>
@@ -215,25 +229,34 @@ ESPHome-устройство. Добавьте его и введите тот �
 
 ## 4. Добавьте автоматизации
 
-Файл `homeassistant/automation.yaml` содержит четыре автоматизации:
+Файл `homeassistant/automation.yaml` содержит пять автоматизаций:
 
 - смена слова при запуске Home Assistant и каждые 10 минут;
 - смена слова по кнопке;
 - перерисовка текущего слова при смене оформления;
+- синхронизация русского и английского списков оформления;
 - добавление и импорт слов через вспомогательные сущности.
 
-Откройте существующий `/config/automations.yaml` и добавьте в его конец четыре
-элемента из файла репозитория. **Не заменяйте свой `automations.yaml` целиком.**
+Откройте существующий `/config/automations.yaml` и добавьте в его конец пять
+элементов из файла репозитория. **Не заменяйте свой `automations.yaml` целиком.**
 После этого проверьте конфигурацию Home Assistant и перезагрузите автоматизации.
 
 ## 5. Добавьте дашборд
+
+`homeassistant/dashboard.yaml` — готовый дашборд с одинаковыми русской и
+английской вкладками. Он использует только стабильные ID сущностей из этой
+инструкции и не требует нестандартных карточек. Создайте новый пустой дашборд,
+откройте редактор исходной конфигурации и замените начальное содержимое полным
+содержимым этого файла. Не выполняйте этот шаг в постороннем существующем
+дашборде.
 
 Для первого запуска достаточно пяти карточек:
 
 - Markdown-карточка с изображением;
 - Tile-карточка для `input_button.hanziframe_next_word`;
 - Tile-карточка для `button.hanzi_frame_refresh_chinese_word`;
-- Entities-карточка для `input_select.hanziframe_display_style`;
+- Entities-карточка для `input_select.hanziframe_display_style_ru` (либо
+  английского `input_select.hanziframe_display_style_en`);
 - To-do List для `todo.chinese_words`.
 
 В Markdown-карточку вставьте:

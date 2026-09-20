@@ -32,6 +32,8 @@ and renders the image; the ESP32 only downloads and displays it.
 - `pyscript/word_generator.py` — Todo/CSV services and image rendering.
 - `homeassistant/automation.yaml` — fresh-install/merge reference; never use it
   to overwrite a complete live `automations.yaml`.
+- `homeassistant/dashboard.yaml` — bilingual dashboard example using only the
+  stable public entity IDs below.
 - `esphome/lilygo-display.yaml` — public device configuration.
 - `docs/INSTALL.md` and `docs/INSTALL.ru.md` — practical installation and
   troubleshooting guides for home users.
@@ -55,6 +57,9 @@ Fresh installations use these identifiers:
 - next word: `input_button.hanziframe_next_word`;
 - display style: `input_select.hanziframe_display_style` with options
   `Без узоров / Plain`, `Уголки / Corners` and `Рамка / Full border`;
+- localized dashboard controls: `input_select.hanziframe_display_style_ru` and
+  `input_select.hanziframe_display_style_en`; they mirror the shared display
+  style and are not renderer inputs themselves;
 - add form: `input_text.hanziframe_new_chinese`,
   `input_text.hanziframe_new_pinyin`,
   `input_text.hanziframe_new_translation`,
