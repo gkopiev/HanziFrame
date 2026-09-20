@@ -82,8 +82,9 @@ todo.chinese_words
 Todo-список; встроенный CSV нужен для первого наполнения и импорта.
 
 Добавьте следующий блок в `/config/configuration.yaml`. Если секции
-`input_button:` или `input_text:` уже существуют, добавьте в них только
-вложенные элементы — второй одноимённый верхнеуровневый ключ создавать нельзя.
+`input_button:`, `input_text:` или `input_select:` уже существуют, добавьте в
+них только вложенные элементы — второй одноимённый верхнеуровневый ключ
+создавать нельзя.
 
 <details>
 <summary>Готовый YAML для вспомогательных сущностей</summary>
@@ -116,6 +117,15 @@ input_text:
   hanziframe_csv_import_words:
     name: "HanziFrame — Pasted CSV"
     max: 255
+
+input_select:
+  hanziframe_display_style:
+    name: "HanziFrame — Display style"
+    icon: mdi:image-frame
+    options:
+      - "Без узоров / Plain"
+      - "Уголки / Corners"
+      - "Рамка / Full border"
 ```
 
 </details>
@@ -205,23 +215,25 @@ ESPHome-устройство. Добавьте его и введите тот �
 
 ## 4. Добавьте автоматизации
 
-Файл `homeassistant/automation.yaml` содержит три автоматизации:
+Файл `homeassistant/automation.yaml` содержит четыре автоматизации:
 
 - смена слова при запуске Home Assistant и каждые 10 минут;
 - смена слова по кнопке;
+- перерисовка текущего слова при смене оформления;
 - добавление и импорт слов через вспомогательные сущности.
 
-Откройте существующий `/config/automations.yaml` и добавьте в его конец три
+Откройте существующий `/config/automations.yaml` и добавьте в его конец четыре
 элемента из файла репозитория. **Не заменяйте свой `automations.yaml` целиком.**
 После этого проверьте конфигурацию Home Assistant и перезагрузите автоматизации.
 
 ## 5. Добавьте дашборд
 
-Для первого запуска достаточно четырёх карточек:
+Для первого запуска достаточно пяти карточек:
 
 - Markdown-карточка с изображением;
 - Tile-карточка для `input_button.hanziframe_next_word`;
 - Tile-карточка для `button.hanzi_frame_refresh_chinese_word`;
+- Entities-карточка для `input_select.hanziframe_display_style`;
 - To-do List для `todo.chinese_words`.
 
 В Markdown-карточку вставьте:
@@ -258,6 +270,7 @@ entity_id:
 - устройство `hanzi-frame` доступно в Home Assistant;
 - кнопка обновления дисплея загружает картинку на E-Ink-экран;
 - кнопка «Следующее слово» меняет и предпросмотр, и изображение на дисплее.
+- смена оформления перерисовывает то же слово, не продвигая словарь.
 
 ## Если что-то не работает
 

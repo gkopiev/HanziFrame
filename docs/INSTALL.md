@@ -82,8 +82,8 @@ Items use the format `Chinese | pinyin | translation`. This Todo list is the
 main vocabulary; the bundled CSV is for the initial words and later imports.
 
 Add the following block to `/config/configuration.yaml`. If `input_button:` or
-`input_text:` already exists, add only the child entries below it. Do not create
-a second top-level section with the same name.
+`input_text:` or `input_select:` already exists, add only the child entries
+below it. Do not create a second top-level section with the same name.
 
 <details>
 <summary>Ready-to-copy helper YAML</summary>
@@ -116,6 +116,15 @@ input_text:
   hanziframe_csv_import_words:
     name: "HanziFrame — Pasted CSV"
     max: 255
+
+input_select:
+  hanziframe_display_style:
+    name: "HanziFrame — Display style"
+    icon: mdi:image-frame
+    options:
+      - "Без узоров / Plain"
+      - "Уголки / Corners"
+      - "Рамка / Full border"
 ```
 
 </details>
@@ -206,23 +215,25 @@ The device should appear as `hanzi-frame` and expose
 
 ## 4. Add the automations
 
-`homeassistant/automation.yaml` contains three automations:
+`homeassistant/automation.yaml` contains four automations:
 
 - change the word when Home Assistant starts and every ten minutes;
 - change the word when the **Next word** helper is pressed;
+- redraw the current word when the display style changes;
 - add and import words through the helper entities.
 
-Open your existing `/config/automations.yaml` and append the three list items
+Open your existing `/config/automations.yaml` and append the four list items
 from the repository file. **Do not replace your whole `automations.yaml`.** Run
 Home Assistant's configuration check, then reload the automations.
 
 ## 5. Add a dashboard
 
-Four cards are enough for the first working dashboard:
+Five cards are enough for the first working dashboard:
 
 - a Markdown card with the rendered image;
 - a Tile card for `input_button.hanziframe_next_word`;
 - a Tile card for `button.hanzi_frame_refresh_chinese_word`;
+- an Entities card for `input_select.hanziframe_display_style`;
 - a To-do List card for `todo.chinese_words`.
 
 Paste this into the Markdown card:
@@ -259,6 +270,7 @@ The installation is complete when:
 - the `hanzi-frame` device is online in Home Assistant;
 - the display refresh button loads the card onto the E-Ink screen;
 - **Next word** changes both the dashboard preview and the physical display.
+- changing the display style redraws the same word without advancing the vocabulary.
 
 ## Troubleshooting
 
