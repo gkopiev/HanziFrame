@@ -6,12 +6,15 @@
 
 - id: hanziframe_scheduled_word_refresh
   alias: HanziFrame scheduled word refresh
-  description: Generates the next word at Home Assistant start and every 10 minutes, then refreshes the E-Ink display.
+  description: Generates the next word when the Pyscript action becomes available and every 10 minutes, then refreshes the E-Ink display.
   triggers:
     - trigger: time_pattern
       minutes: /10
-    - trigger: homeassistant
-      event: start
+    - trigger: event
+      event_type: service_registered
+      event_data:
+        domain: pyscript
+        service: generate_word_image
   conditions: []
   actions:
     - action: pyscript.generate_word_image
