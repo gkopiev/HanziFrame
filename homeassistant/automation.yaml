@@ -46,6 +46,46 @@
         skip_condition: true
   mode: single
 
+- id: hanziframe_display_style_refresh
+  alias: HanziFrame display style refresh
+  description: Redraws the current word in the selected style without advancing the vocabulary.
+  triggers:
+    - trigger: state
+      entity_id: input_select.hanziframe_display_style
+      not_from:
+        - unknown
+        - unavailable
+      not_to:
+        - unknown
+        - unavailable
+  conditions:
+    - condition: template
+      value_template: "{{ state_attr('sensor.current_hanzi_word', 'chinese') | default('', true) | length > 0 }}"
+  actions:
+    - variables:
+        result: {}
+    - action: pyscript.rerender_current_word
+      data:
+        chinese: "{{ state_attr('sensor.current_hanzi_word', 'chinese') }}"
+        pinyin: "{{ state_attr('sensor.current_hanzi_word', 'pinyin') or '' }}"
+        translation: "{{ state_attr('sensor.current_hanzi_word', 'translation') or '' }}"
+        word_number: "{{ state_attr('sensor.current_hanzi_word', 'word_number') }}"
+        total_words: "{{ state_attr('sensor.current_hanzi_word', 'total_words') }}"
+        source: "{{ state_attr('sensor.current_hanzi_word', 'source') or 'custom' }}"
+        display_style: "{{ states('input_select.hanziframe_display_style') }}"
+      response_variable: result
+      continue_on_error: true
+    - if:
+        - condition: template
+          value_template: "{{ result is mapping and result.get('generated') }}"
+      then:
+        - action: button.press
+          target:
+            entity_id: button.hanzi_frame_refresh_chinese_word
+          data: {}
+  mode: queued
+  max: 10
+
 - id: hanziframe_dictionary_management
   alias: HanziFrame dictionary management
   description: Adds words and imports vocabulary through native Home Assistant helpers.

@@ -19,6 +19,10 @@ OTHER_FONT_PATH = f"{BASE_APP_PATH}/fonts/Montserrat-SemiBold.ttf"
 OUTPUT_PATH = "/config/www/word.png"
 TODO_LIST_ENTITY = "todo.chinese_words"
 CURRENT_WORD_SENSOR = "sensor.current_hanzi_word"
+DISPLAY_STYLE_ENTITY = "input_select.hanziframe_display_style"
+DISPLAY_STYLE_PLAIN = "plain"
+DISPLAY_STYLE_CORNERS = "corners"
+DISPLAY_STYLE_FRAME = "frame"
 # -------------------------
 
 
@@ -251,7 +255,165 @@ def get_adaptive_font_size(draw, text, font_path, base_size, max_width, min_size
 
 
 @pyscript_compile
-def create_word_image(word_data, output_path, word_number=None, total_words=None):
+def _normalize_display_style(display_style):
+    """Maps Home Assistant option labels to stable internal style names."""
+    value = _clean_text(display_style).casefold()
+    if "corner" in value or "угол" in value:
+        return DISPLAY_STYLE_CORNERS
+    if "frame" in value or "рамк" in value:
+        return DISPLAY_STYLE_FRAME
+    return DISPLAY_STYLE_PLAIN
+
+
+@pyscript_compile
+def _draw_orthogonal_stroke(draw, points, fill, stroke_width=5):
+    """Draws an axis-aligned polyline with exact square joins."""
+    radius = stroke_width // 2
+    for index in range(len(points) - 1):
+        x0, y0 = points[index]
+        x1, y1 = points[index + 1]
+        draw.rectangle(
+            [
+                min(x0, x1) - radius,
+                min(y0, y1) - radius,
+                max(x0, x1) + radius,
+                max(y0, y1) + radius,
+            ],
+            fill=fill,
+        )
+
+
+@pyscript_compile
+def _draw_reference_corner(draw, width, height, mirror_x=False, mirror_y=False):
+    """Draws one approved five-aperture lattice corner, optionally mirrored."""
+    origin, grid = 25, 10
+    arm = [(0, 8), (0, 3), (2, 3), (2, 0), (1, 0), (1, 8)]
+    arms = [arm, [(y, x) for x, y in arm]]
+    for arm_points in arms:
+        points = []
+        for grid_x, grid_y in arm_points:
+            x = origin + grid * grid_x
+            y = origin + grid * grid_y
+            if mirror_x:
+                x = width - 1 - x
+            if mirror_y:
+                y = height - 1 - y
+            points.append((x, y))
+        _draw_orthogonal_stroke(draw, points, (0, 0, 0), stroke_width=5)
+
+
+@pyscript_compile
+def _draw_reference_ornament(draw, width, height, display_style, counter_gap=None):
+    """Draws the approved corner-only or full-frame ornament."""
+    for mirror_x, mirror_y in [(False, False), (True, False), (False, True), (True, True)]:
+        _draw_reference_corner(draw, width, height, mirror_x, mirror_y)
+
+    if display_style != DISPLAY_STYLE_FRAME:
+        return
+
+    ray_end = 105
+    right = width - 1 - ray_end
+    bottom = height - 1 - ray_end
+    gap_left, gap_right = counter_gap or (430, 529)
+    for inset in [25, 35]:
+        _draw_orthogonal_stroke(draw, [(ray_end, inset), (gap_left, inset)], (0, 0, 0), 5)
+        _draw_orthogonal_stroke(draw, [(gap_right, inset), (right, inset)], (0, 0, 0), 5)
+        _draw_orthogonal_stroke(
+            draw,
+            [(ray_end, height - 1 - inset), (right, height - 1 - inset)],
+            (0, 0, 0),
+            5,
+        )
+        _draw_orthogonal_stroke(draw, [(inset, ray_end), (inset, bottom)], (0, 0, 0), 5)
+        _draw_orthogonal_stroke(
+            draw,
+            [(width - 1 - inset, ray_end), (width - 1 - inset, bottom)],
+            (0, 0, 0),
+            5,
+        )
+
+
+@pyscript_compile
+def _draw_decorative_layout(
+    draw,
+    word_data,
+    width,
+    height,
+    display_style,
+    word_number=None,
+    total_words=None,
+):
+    """Draws the user-approved decorative layout and pattern geometry."""
+    black = (0, 0, 0)
+    chinese_text = word_data.get("chinese", "?")
+    pinyin_text = word_data.get("pinyin", "")
+    translation_text = word_data.get("translation", "")
+
+    chinese_size, chinese_font = get_adaptive_font_size(
+        draw, chinese_text, CHINESE_FONT_PATH, 196, 315, min_size=30
+    )
+    pinyin_size, pinyin_font = get_adaptive_font_size(
+        draw, pinyin_text, OTHER_FONT_PATH, 78, 315, min_size=24
+    )
+    translation_size, translation_font = get_adaptive_font_size(
+        draw, translation_text, OTHER_FONT_PATH, 77, 680, min_size=20
+    )
+    try:
+        counter_font = ImageFont.truetype(OTHER_FONT_PATH, 22)
+    except IOError:
+        counter_font = ImageFont.load_default()
+
+    counter_text = ""
+    counter_gap = (430, 529)
+    if word_number is not None and total_words is not None:
+        counter_text = f"{word_number} / {total_words}"
+        counter_bbox = draw.textbbox((0, 0), counter_text, font=counter_font)
+        counter_width = counter_bbox[2] - counter_bbox[0]
+        half_gap = max(50, counter_width // 2 + 12)
+        counter_gap = (width // 2 - half_gap, width // 2 + half_gap)
+
+    _draw_reference_ornament(draw, width, height, display_style, counter_gap)
+    draw.line([(480, 109), (480, 293)], fill=black, width=2)
+    draw.line([(139, 351), (821, 351)], fill=black, width=2)
+
+    if counter_text:
+        counter_bbox = draw.textbbox((0, 0), counter_text, font=counter_font)
+        counter_x = width // 2 - (counter_bbox[2] - counter_bbox[0]) // 2
+        counter_y = 27 - (counter_bbox[3] - counter_bbox[1]) // 2 - counter_bbox[1]
+        draw.text((counter_x, counter_y), counter_text, fill=black, font=counter_font)
+
+    for text, font, center_x, center_y in [
+        (chinese_text, chinese_font, 267, 213),
+        (pinyin_text, pinyin_font, 693, 213),
+        (translation_text, translation_font, 480, 430),
+    ]:
+        bbox = draw.textbbox((0, 0), text, font=font)
+        x = center_x - (bbox[2] - bbox[0]) // 2 - bbox[0]
+        y = center_y - (bbox[3] - bbox[1]) // 2 - bbox[1]
+        draw.text((x, y), text, fill=black, font=font)
+
+
+@pyscript_compile
+def _save_inverted_image(img, output_path):
+    """Atomically replaces the public PNG after rendering completes."""
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    temporary_path = f"{output_path}.{time.time_ns()}.tmp"
+    try:
+        ImageOps.invert(img).save(temporary_path, "PNG")
+        os.replace(temporary_path, output_path)
+    finally:
+        if os.path.exists(temporary_path):
+            os.remove(temporary_path)
+
+
+@pyscript_compile
+def create_word_image(
+    word_data,
+    output_path,
+    word_number=None,
+    total_words=None,
+    display_style=DISPLAY_STYLE_PLAIN,
+):
     """Creates the fixed-size, inverted PNG used by the E-Ink display."""
     width, height = 960, 540
     white, black = (255, 255, 255), (0, 0, 0)
@@ -260,6 +422,20 @@ def create_word_image(word_data, output_path, word_number=None, total_words=None
 
     img = Image.new("RGB", (width, height), white)
     draw = ImageDraw.Draw(img)
+    display_style = _normalize_display_style(display_style)
+
+    if display_style in (DISPLAY_STYLE_CORNERS, DISPLAY_STYLE_FRAME):
+        _draw_decorative_layout(
+            draw,
+            word_data,
+            width,
+            height,
+            display_style,
+            word_number,
+            total_words,
+        )
+        _save_inverted_image(img, output_path)
+        return output_path
 
     top_height = int(height * 0.7)
     bottom_height = height - top_height
@@ -340,12 +516,17 @@ def create_word_image(word_data, output_path, word_number=None, total_words=None
     translation_y = translation_baseline_y - (translation_bbox[3] - translation_bbox[1]) // 2 - translation_bbox[1]
     draw.text((translation_x, translation_y), translation_text, fill=black, font=translation_font)
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    ImageOps.invert(img).save(output_path, "PNG")
+    _save_inverted_image(img, output_path)
     return output_path
 
 
-def _publish_current_word(word, word_number=None, total_words=None, source="custom"):
+def _publish_current_word(
+    word,
+    word_number=None,
+    total_words=None,
+    source="custom",
+    display_style=DISPLAY_STYLE_PLAIN,
+):
     """Publishes status for the dashboard and a unique preview cache-busting version."""
     attributes = {
         "chinese": word["chinese"],
@@ -355,6 +536,7 @@ def _publish_current_word(word, word_number=None, total_words=None, source="cust
         "total_words": total_words,
         "image_version": time.time_ns(),
         "source": source,
+        "display_style": _normalize_display_style(display_style),
         "friendly_name": "Текущее китайское слово",
         "icon": "mdi:translate",
     }
@@ -366,13 +548,14 @@ def _generate_word_image_impl(chinese=None, pinyin=None, translation=None):
     is_custom_request = (
         chinese is not None or pinyin is not None or translation is not None
     )
+    display_style = state.get(DISPLAY_STYLE_ENTITY)
     if is_custom_request:
         word = _word_from_values(chinese, pinyin, translation)
         if not word:
             log.error("Custom image generation requires a Chinese word")
             return {"generated": False, "reason": "missing_chinese"}
-        task.executor(create_word_image, word, OUTPUT_PATH)
-        _publish_current_word(word, source="custom")
+        task.executor(create_word_image, word, OUTPUT_PATH, None, None, display_style)
+        _publish_current_word(word, source="custom", display_style=display_style)
         return {"generated": True, "source": "custom"}
 
     words = load_chinese_words_from_todo()
@@ -403,8 +586,9 @@ def _generate_word_image_impl(chinese=None, pinyin=None, translation=None):
         OUTPUT_PATH,
         word_number=word_number,
         total_words=total_words,
+        display_style=display_style,
     )
-    _publish_current_word(word, word_number, total_words, source)
+    _publish_current_word(word, word_number, total_words, source, display_style)
     return {
         "generated": True,
         "source": source,
@@ -421,6 +605,46 @@ def generate_word_image(chinese=None, pinyin=None, translation=None):
     except Exception as exc:
         error = str(exc)
         log.error(f"Word generation failed before completion: {error}")
+        return {
+            "generated": False,
+            "reason": "generation_failed",
+            "error": error[:240],
+        }
+
+
+@service(supports_response="optional")
+def rerender_current_word(
+    chinese=None,
+    pinyin=None,
+    translation=None,
+    word_number=None,
+    total_words=None,
+    source="custom",
+    display_style=None,
+):
+    """Redraws the current word in a new style without advancing the vocabulary."""
+    try:
+        word = _word_from_values(chinese, pinyin, translation)
+        if not word:
+            return {"generated": False, "reason": "missing_chinese"}
+        style = display_style or state.get(DISPLAY_STYLE_ENTITY)
+        task.executor(
+            create_word_image,
+            word,
+            OUTPUT_PATH,
+            word_number,
+            total_words,
+            style,
+        )
+        _publish_current_word(word, word_number, total_words, source, style)
+        return {
+            "generated": True,
+            "source": source,
+            "display_style": _normalize_display_style(style),
+        }
+    except Exception as exc:
+        error = str(exc)
+        log.error(f"Current word redraw failed: {error}")
         return {
             "generated": False,
             "reason": "generation_failed",
