@@ -125,6 +125,20 @@ input_select:
       - "Без узоров / Plain"
       - "Уголки / Corners"
       - "Рамка / Full border"
+  hanziframe_display_style_ru:
+    name: "HanziFrame — Оформление экрана"
+    icon: mdi:image-frame
+    options:
+      - "Без узоров"
+      - "Уголки"
+      - "Рамка"
+  hanziframe_display_style_en:
+    name: "HanziFrame — Display style"
+    icon: mdi:image-frame
+    options:
+      - "Plain"
+      - "Corners"
+      - "Full border"
 ```
 
 </details>
@@ -215,25 +229,33 @@ The device should appear as `hanzi-frame` and expose
 
 ## 4. Add the automations
 
-`homeassistant/automation.yaml` contains four automations:
+`homeassistant/automation.yaml` contains five automations:
 
 - change the word when Home Assistant starts and every ten minutes;
 - change the word when the **Next word** helper is pressed;
 - redraw the current word when the display style changes;
+- keep the Russian and English display-style dropdowns synchronized;
 - add and import words through the helper entities.
 
-Open your existing `/config/automations.yaml` and append the four list items
+Open your existing `/config/automations.yaml` and append the five list items
 from the repository file. **Do not replace your whole `automations.yaml`.** Run
 Home Assistant's configuration check, then reload the automations.
 
 ## 5. Add a dashboard
+
+`homeassistant/dashboard.yaml` is a ready-to-copy dashboard with matching
+Russian and English views. It uses only the stable entity IDs from this guide
+and does not require custom cards. Create a new empty dashboard, open its raw
+configuration editor and replace the initial content with the complete contents
+of this file. Do not use this step on an unrelated existing dashboard.
 
 Five cards are enough for the first working dashboard:
 
 - a Markdown card with the rendered image;
 - a Tile card for `input_button.hanziframe_next_word`;
 - a Tile card for `button.hanzi_frame_refresh_chinese_word`;
-- an Entities card for `input_select.hanziframe_display_style`;
+- an Entities card for `input_select.hanziframe_display_style_en` (or the
+  Russian `input_select.hanziframe_display_style_ru`);
 - a To-do List card for `todo.chinese_words`.
 
 Paste this into the Markdown card:
