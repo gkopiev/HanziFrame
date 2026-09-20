@@ -53,6 +53,8 @@ Fresh installations use these identifiers:
 - refresh: `button.hanzi_frame_refresh_chinese_word`;
 - vocabulary/status: `todo.chinese_words`, `sensor.current_hanzi_word`;
 - next word: `input_button.hanziframe_next_word`;
+- display style: `input_select.hanziframe_display_style` with options
+  `Без узоров / Plain`, `Уголки / Corners` and `Рамка / Full border`;
 - add form: `input_text.hanziframe_new_chinese`,
   `input_text.hanziframe_new_pinyin`,
   `input_text.hanziframe_new_translation`,
