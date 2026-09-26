@@ -11,10 +11,10 @@
 The license applies to the photo only. Attribution may use the title,
 creator name, a link to this repository and the CC BY 4.0 license link.
 
-## Home Assistant dashboard screenshot
+## Home Assistant dashboard screenshots
 
-**HanziFrame Home Assistant dashboard screenshot**
-(`Home_Assistant_Dashboard.png`)
+**HanziFrame Home Assistant dashboard screenshots**
+(`Home_Assistant_Dashboard_RU.jpg`, `Home_Assistant_Dashboard_EN.jpg`)
 
 - Creator: [gkopiev](https://github.com/gkopiev)
 - Copyright in the creator's original selection, arrangement, local
@@ -26,7 +26,7 @@ creator name, a link to this repository and the CC BY 4.0 license link.
   licensed under the [Apache License 2.0](HOME_ASSISTANT_FRONTEND_LICENSE.md)
 
 CC BY 4.0 applies only to copyright and similar rights held by `gkopiev` in the
-screenshot. It does not relicense the Home Assistant interface, names, logos,
+screenshots. It does not relicense the Home Assistant interface, names, logos,
 trademarks or any other third-party material shown; those remain subject to
 their respective terms.
 

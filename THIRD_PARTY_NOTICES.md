@@ -47,13 +47,14 @@ The **HanziFrame device photo** (`assets/Display_Photo.png`) is © 2025
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See the adjacent
 [media notice](assets/LICENSE.md).
 
-The **HanziFrame Home Assistant dashboard screenshot**
-(`assets/Home_Assistant_Dashboard.png`) is a user-created capture of a locally
+The **HanziFrame Home Assistant dashboard screenshots**
+(`assets/Home_Assistant_Dashboard_RU.jpg` and
+`assets/Home_Assistant_Dashboard_EN.jpg`) are user-created captures of a locally
 configured HanziFrame dashboard. Copyright in `gkopiev`'s original selection,
 arrangement, local configuration and capture is © 2026 gkopiev and licensed
 under CC BY 4.0; see the [media notice](assets/LICENSE.md).
 
-The screenshot depicts
+The screenshots depict
 [Home Assistant Frontend](https://github.com/home-assistant/frontend), which
 remains under the
 [Apache License 2.0](assets/HOME_ASSISTANT_FRONTEND_LICENSE.md). The CC license
