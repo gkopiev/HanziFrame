@@ -38,9 +38,9 @@ use any characters available in the bundled font; the starter vocabulary uses
 Russian translations. The refresh interval is configurable too.
 
 <p align="center">
-  <img src="assets/Home_Assistant_Dashboard.png" alt="HanziFrame dashboard in Home Assistant showing the current card with a Chinese word, pinyin and translation, display controls, word entry and import, and the Todo list" width="900">
+  <img src="assets/Home_Assistant_Dashboard_EN.jpg" alt="English HanziFrame dashboard in Home Assistant with a card preview, display style selector, refresh controls, and word entry form" width="900">
   <br>
-  <sub>Home Assistant dashboard: the current card, display controls, word entry and import, and the Todo vocabulary.</sub>
+  <sub>English dashboard: card preview, display style, refresh controls, and word entry.</sub>
 </p>
 
 ## What you need
