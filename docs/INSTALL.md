@@ -49,16 +49,19 @@ the chat.
 
 1. Install **Pyscript** through HACS and add the integration to Home Assistant.
 2. Copy everything inside the repository's `pyscript/` directory to
-   `/config/pyscript/`. This includes `word_generator.py`, `requirements.txt`,
-   the CSV file, both fonts, and their licence files.
+   `/config/pyscript/`. This includes `word_generator.py`, `hanziframe_lifecycle.py`,
+   `requirements.txt`, the CSV file, both fonts, and their licence files.
 3. Create `/config/www/` if it does not already exist. HanziFrame writes
    `word.png` there.
-4. Enable **Allow all imports** in the Pyscript integration options. If Pyscript
-   is configured through YAML, merge this setting into its existing section:
+4. Enable **Allow all imports** and **Allow access to Home Assistant hass object**
+   in the Pyscript integration options. The lifecycle watcher uses `hass` to
+   read service availability and listen for shutdown. If Pyscript is configured
+   through YAML, merge these settings into its existing section:
 
 ```yaml
 pyscript:
   allow_all_imports: true
+  hass_is_global: true
 ```
 
 Restart Home Assistant. These actions should appear under **Developer Tools →
@@ -68,6 +71,13 @@ Actions**:
 - `pyscript.add_chinese_word`;
 - `pyscript.bulk_import_words`;
 - `pyscript.import_words_from_csv`.
+
+The lifecycle file creates `binary_sensor.hanziframe_ready`. It is `on` when the
+renderer action is available and Home Assistant is not stopping. While it is off
+during shutdown or a Pyscript reload, the automation skips refreshes. Becoming
+ready triggers a refresh, including after reloading the lifecycle file alone.
+The ten-minute schedule and next-word button also use this readiness check.
+Readiness describes the generator, not the state of the physical E-Ink screen.
 
 ### 2.2. Create the vocabulary and helpers
 
@@ -300,6 +310,7 @@ The installation is complete when:
 |---|---|
 | Pyscript actions are missing | Confirm the files are in `/config/pyscript/`, `allow_all_imports` is enabled, Home Assistant was restarted, and Pillow installed from `requirements.txt`. |
 | `no_active_todo_words` | The Todo list is empty. Import the starter CSV or add a word manually. |
+| `binary_sensor.hanziframe_ready` is missing or stays off | Confirm `hanziframe_lifecycle.py` was copied and `hass_is_global` is enabled. Check Pyscript logs and whether `pyscript.generate_word_image` is registered. |
 | `/local/word.png` is missing | Run `pyscript.generate_word_image` and confirm `/config/www/` exists and is writable. |
 | ESPHome cannot find `t547` | Copy the complete `custom_components/t547/` directory next to the YAML and run a Clean build. |
 | The image exists but the display does not refresh | Check the refresh entity and open the image URL from another device on the same network. Replace `homeassistant.local` with the Home Assistant IP address if needed. |

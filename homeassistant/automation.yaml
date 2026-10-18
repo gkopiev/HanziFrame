@@ -6,17 +6,19 @@
 
 - id: hanziframe_scheduled_word_refresh
   alias: HanziFrame scheduled word refresh
-  description: Generates the next word when the Pyscript action becomes available and every 10 minutes, then refreshes the E-Ink display.
+  description: Generates the next word when the renderer becomes ready and every 10 minutes, then refreshes the E-Ink display.
   triggers:
     - trigger: time_pattern
       minutes: /10
-    - trigger: event
-      event_type: service_registered
-      event_data:
-        domain: pyscript
-        service: generate_word_image
+    - trigger: state
+      entity_id: binary_sensor.hanziframe_ready
+      to: "on"
   conditions: []
   actions:
+    # Keep this inside actions: the next-word helper skips outer conditions.
+    - condition: state
+      entity_id: binary_sensor.hanziframe_ready
+      state: "on"
     - action: pyscript.generate_word_image
       data: {}
     - action: button.press
