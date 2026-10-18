@@ -30,6 +30,8 @@ and renders the image; the ESP32 only downloads and displays it.
 ## Main entry points
 
 - `pyscript/word_generator.py` — Todo/CSV services and image rendering.
+- `pyscript/hanziframe_lifecycle.py` — renderer service/lifecycle readiness and
+  listener cleanup; requires Pyscript `allow_all_imports` and `hass_is_global`.
 - `homeassistant/automation.yaml` — fresh-install/merge reference; never use it
   to overwrite a complete live `automations.yaml`.
 - `homeassistant/dashboard.yaml` — bilingual dashboard example using only the
@@ -54,6 +56,8 @@ Fresh installations use these identifiers:
 - device: `hanzi-frame`;
 - refresh: `button.hanzi_frame_refresh_chinese_word`;
 - vocabulary/status: `todo.chinese_words`, `sensor.current_hanzi_word`;
+- renderer readiness: `binary_sensor.hanziframe_ready` (service availability and
+  HA lifecycle only; not display health);
 - next word: `input_button.hanziframe_next_word`;
 - display style: `input_select.hanziframe_display_style` with options
   `Без узоров / Plain`, `Уголки / Corners` and `Рамка / Full border`;
@@ -136,6 +140,13 @@ python -m py_compile pyscript/word_generator.py
 python -c "import csv; list(csv.DictReader(open('pyscript/apps/chinese_display/data/chinese_words.csv', encoding='utf-8')))"
 git diff --check
 ```
+
+The isolated lifecycle suite uses real HA/Pyscript classes and a temporary HA
+instance, without connecting to a running installation. In an environment where
+`homeassistant` and `custom_components.pyscript` are importable, run
+`python -m unittest discover -s tests -v`. It covers registration, stop, reload,
+cleanup before and after startup, both cold-start orders, and the public
+readiness-triggered refresh action chain.
 
 Run `esphome config esphome/lilygo-display.yaml` only after the user has created
 an ignored local secrets file, or in an isolated copy with dummy secrets. Never

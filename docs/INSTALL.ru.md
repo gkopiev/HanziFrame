@@ -49,16 +49,19 @@ File editor или Samba.
 
 1. Установите **Pyscript** через HACS и добавьте интеграцию в Home Assistant.
 2. Скопируйте всё содержимое каталога `pyscript/` из репозитория в
-   `/config/pyscript/`. Должны попасть `word_generator.py`, `requirements.txt`,
-   CSV, оба шрифта и файлы их лицензий.
+   `/config/pyscript/`. Должны попасть `word_generator.py`, `hanziframe_lifecycle.py`,
+   `requirements.txt`, CSV, оба шрифта и файлы их лицензий.
 3. Создайте каталог `/config/www/`, если его ещё нет. В нём будет появляться
    файл `word.png`.
-4. В настройках интеграции Pyscript включите **Allow all imports**. Если Pyscript
-   настроен через YAML, добавьте параметр в существующую секцию:
+4. В настройках интеграции Pyscript включите **Allow all imports** и
+   **Allow access to Home Assistant hass object**. Модуль готовности использует
+   `hass`, чтобы проверять наличие действия и отслеживать остановку HA. Если
+   Pyscript настроен через YAML, добавьте настройки в существующую секцию:
 
 ```yaml
 pyscript:
   allow_all_imports: true
+  hass_is_global: true
 ```
 
 Перезапустите Home Assistant. В **Инструменты разработчика → Действия** должны
@@ -68,6 +71,14 @@ pyscript:
 - `pyscript.add_chinese_word`;
 - `pyscript.bulk_import_words`;
 - `pyscript.import_words_from_csv`.
+
+Модуль создаёт `binary_sensor.hanziframe_ready`: `on` означает, что действие
+генератора доступно и Home Assistant не останавливается. Пока готовность
+выключена при остановке или перезагрузке Pyscript, автоматизация пропускает
+обновления. Переход в готовность запускает обновление, в том числе после
+перезагрузки только файла lifecycle. Расписание раз в десять минут и кнопка
+следующего слова также проверяют готовность. Это готовность генератора,
+а не состояние физического экрана E-Ink.
 
 ### 2.2. Создайте список слов и вспомогательные сущности
 
@@ -301,6 +312,7 @@ entity_id:
 |---|---|
 | Нет действий Pyscript | Файлы находятся в `/config/pyscript/`, включён `allow_all_imports`, Home Assistant перезапущен, Pillow установился из `requirements.txt`. |
 | `no_active_todo_words` | Список Todo пуст. Импортируйте стартовый CSV или добавьте слово вручную. |
+| Нет `binary_sensor.hanziframe_ready` или он остаётся выключенным | Проверьте, что скопирован `hanziframe_lifecycle.py` и включён `hass_is_global`. Проверьте журнал Pyscript и наличие действия `pyscript.generate_word_image`. |
 | Нет `/local/word.png` | Вызовите `pyscript.generate_word_image` и проверьте, что `/config/www/` существует и доступен для записи. |
 | ESPHome не находит `t547` | Скопируйте весь `custom_components/t547/` рядом с YAML и выполните Clean build. |
 | Картинка есть, но экран не обновляется | Проверьте кнопку обновления и доступность URL картинки с другого устройства в той же сети. При необходимости замените `homeassistant.local` на IP-адрес HA. |
